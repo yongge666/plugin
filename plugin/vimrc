@@ -38,12 +38,112 @@ set termencoding=utf-8
 set encoding=utf-8
 set fileencodings=ucs-bom,utf-8,cp936
 set fileencoding=utf-8
+
+"""""插件设置""""
+if has('/opt/local/bin/ctags')
+    let Tlist_Ctags_Cmd='/opt/local/bin/ctags'
+endif
+
+" Taglist plugin
+map <F5> :TlistToggle<CR>
+let Tlist_WinWidth = 30
+let Tlist_Use_Right_Window = 1
+let Tlist_Use_SingleClick = 1
+let Tlist_Show_One_File=1
+let Tlist_Exit_OnlyWindow=1
+let Tlist_Auto_Open=1
+map <F8> :! ctags -R .<CR>
+
+" NERDTree plugin
+map <F2> :NERDTreeMirror<CR>
+map <F3> :NERDTreeToggle<CR>
+" au VimEnter * NERDTree
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""新文件标题""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "新建.c,.h,.sh,.java文件，自动插入文件头 
-autocmd BufNewFile *.cpp,*.[ch],*.sh,*.java exec ":call SetTitle()" 
-""定义函数SetTitle，自动插入文件头 
-func SetTitle() 
+autocmd BufNewFile *.cpp,*.[ch] exec ":call SetTitleC()" 
+autocmd BufNewFile *.sh exec ":call SetTitleSh()" 
+autocmd BufNewFile *.php exec ":call SetTitlePhp()" 
+autocmd BufNewFile *.py exec ":call SetTitlePy()" 
+autocmd BufNewFile *.html,*.htm,*.phtml exec ":call SetTitleHtml()" 
+autocmd BufNewFile *.css exec ":call SetTitleCss()" 
+autocmd BufNewFile *.java exec ":call SetTitleJava()" 
+
+
+""定义函数SetTitle，自动插入文件头
+func SetTitle()
+	    call setline(1, "/*************************************************************************") 
+        call append(line("."), "    > File Name: ".expand("%")) 
+        call append(line(".")+1, "    > Author: liyong") 
+        call append(line(".")+2, "    > Mail: 2550702985@qq") 
+        call append(line(".")+3, "    > Created Time: ".strftime("%c")) 
+        call append(line(".")+4, " ************************************************************************/")
+endfunc
+
+func SetTitleC()
+	    call SetTitle()
+		call append(line(".")+5, "#include<stdio.h>")
+        call append(line(".")+6, "")
+		"新建文件后，自动定位到文件末尾
+        autocmd BufNewFile * normal G
+endfunc 
+
+func SetTitleSh()
+	    call SetTitle()
+		call append(line(".")+5, "\#!/bin/bash")
+        call append(line(".")+6, "")
+		"新建文件后，自动定位到文件末尾
+        autocmd BufNewFile * normal G
+endfunc 
+
+func SetTitlePhp()
+	    call SetTitle()
+		call append(line(".")+5, "<?php")
+		call append(line(".")+6, "")
+		"新建文件后，自动定位到文件末尾
+        autocmd BufNewFile * normal G
+endfunc 
+
+func SetTitlePy()
+	    call SetTitle() 
+        call append(line(".")+5, "#!/usr/bin/env python")
+        call append(line(".")+6, "# -*- coding: utf-8 -*-") 
+        call append(line(".")+7, "")
+		"新建文件后，自动定位到文件末尾
+        autocmd BufNewFile * normal G
+endfunc
+
+func SetTitleHtml()
+	    call setline(1, "<!DOCTYPE HTML>")
+        call append(line(".")+2, "<html lang="en-US">")
+        call append(line(".")+3, "<head>")
+        call append(line(".")+4, "	<meta charset="UTF-8">")
+        call append(line(".")+5, "	<title></title>")
+        call append(line(".")+6, "</head>")
+        call append(line(".")+7, "<body>")
+        call append(line(".")+8, "</body>")
+        call append(line(".")+9, "</html>")
+		"新建文件后，自动定位到文件末尾
+        autocmd BufNewFile * normal G
+endfunc
+
+
+func SetTitleCss()
+	    call setline(1, "@charset 'utf-8'")
+		call append(line(".")+2, "")
+		"新建文件后，自动定位到文件末尾
+        autocmd BufNewFile * normal G
+endfunc
+
+func SetTitleJava()
+	    call SetTitle()
+		call append(line(".")+5, "")
+		"新建文件后，自动定位到文件末尾
+        autocmd BufNewFile * normal G
+endfunc
+
+func SetFileTitle() 
     "如果文件类型为.sh文件 
     if &filetype == 'sh' 
         call setline(1,"\#########################################################################") 
@@ -57,12 +157,42 @@ func SetTitle()
     else 
         call setline(1, "/*************************************************************************") 
         call append(line("."), "    > File Name: ".expand("%")) 
-        call append(line(".")+1, "    > Author: ma6174") 
-        call append(line(".")+2, "    > Mail: ma6174@163.com ") 
+        call append(line(".")+1, "    > Author: liyong") 
+        call append(line(".")+2, "    > Mail: 2550702985@qq") 
         call append(line(".")+3, "    > Created Time: ".strftime("%c")) 
         call append(line(".")+4, " ************************************************************************/") 
         call append(line(".")+5, "")
     endif
+	
+	"如果文件类型为.py文件
+	if &filetype == 'py'
+        call append(line(".")+6, "#!/usr/bin/env python")
+        call append(line(".")+7, "# -*- coding: utf-8 -*-")
+    endif
+	
+	"如果文件类型为.php文件
+	if &filetype == 'php'
+        call append(line(".")+6, "<?php")
+    endif
+	
+	"如果文件类型为.html文件
+	if &filetype == 'html'
+        call append(line(".")+6, "<!DOCTYPE HTML>")
+        call append(line(".")+7, "<html lang="en-US">")
+        call append(line(".")+8, "<head>")
+        call append(line(".")+9, "	<meta charset="UTF-8">")
+        call append(line(".")+10, "	<title></title>")
+        call append(line(".")+11, "</head>")
+        call append(line(".")+12, "<body>")
+        call append(line(".")+13, "</body>")
+        call append(line(".")+14, "</html>")
+    endif
+	
+	"如果文件类型为.css文件
+	if &filetype == 'css'
+        call setline(1, "@charset 'utf-8'")
+    endif
+	 
     if &filetype == 'cpp'
         call append(line(".")+6, "#include<iostream>")
         call append(line(".")+7, "using namespace std;")
@@ -75,6 +205,45 @@ func SetTitle()
     "新建文件后，自动定位到文件末尾
     autocmd BufNewFile * normal G
 endfunc 
+
+
+"将键盘上的F4功能键映射为添加作者信息的快捷键  
+map <F4> ms:call TitleDet()<cr>'s  
+function AddTitle()  
+        call append(0,"/*******************************************************************************")  
+        call append(1," * Author     :liyong")  
+        call append(2," * Email  : 2550702985@qq.com")  
+        call append(3," * Last modified : ".strftime("%Y-%m-%d %H:%M"))  
+        call append(4," * Filename   : ".expand("%:t"))  
+        call append(5," * Description    : ")  
+        call append(6," * *****************************************************************************/")  
+        echohl WarningMsg | echo "Successful in adding the copyright." | echohl None  
+endfunction 
+
+function UpdateTitle()  
+        normal m'  
+        execute '/# *Last modified:/s@:.*$@\=strftime(":\t%Y-%m-%d %H:%M")@'  
+        normal "  
+        normal mk  
+        execute '/# *Filename:/s@:.*$@\=":\t\t".expand("%:t")@'  
+        execute "noh"  
+        normal 'k  
+        echohl WarningMsg | echo "Successful in updating the copy right."| echohl None  
+endfunction
+
+function TitleDet()  
+        let n=1  
+        while n < 10  
+                let line = getline(n)  
+                if line =~'^\#\s*\S*Last\smodified:\S*.*$'  
+                        call UpdateTitle()  
+                        return  
+                endif  
+                let n = n + 1  
+        endwhile  
+        call AddTitle()  
+endfunction
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "键盘命令
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
